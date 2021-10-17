@@ -51,14 +51,28 @@ let categories = [
     },
 ]
 
+// get all todos
 app.get('/getAllTodos', (req, res) => {
     return res.send(todos)
 })
 
+// create new todo
 app.post('/createNewTodo/:todo', (req, res) => {
     const reqObj = JSON.parse(req.params.todo)
     let newId = (todos.length + 1)
     const newTodo = {id: newId, ...reqObj}
     todos.push(newTodo)
+    return res.send(todos)
+})
+
+// update a todo
+app.post('/updateTodo/:updatedTodo', (req, res) => {
+    const updatedTodo = JSON.parse(req.params.updatedTodo)
+    todos = todos.map(todo => {
+        if(todo.id === updatedTodo.id){
+            return updatedTodo
+        }
+        return todo
+    })
     return res.send(todos)
 })
