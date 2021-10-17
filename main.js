@@ -59,8 +59,8 @@ app.get('/getAllTodos', (req, res) => {
 // create new todo
 app.post('/createNewTodo/:todo', (req, res) => {
     const reqObj = JSON.parse(req.params.todo)
-    let newId = (todos.length + 1)
-    const newTodo = {id: newId, ...reqObj}
+    let newID = (todos.length + 1)
+    const newTodo = {id: newID, ...reqObj}
     todos.push(newTodo)
     return res.send(todos)
 })
@@ -86,4 +86,17 @@ app.delete('/deleteTodo/:id', (req, res) => {
         }
     })
     return res.send(todos)
+})
+
+// get categories
+app.get('/getCategories', (req, res) => {
+    return res.send(categories)
+})
+
+// add category
+app.post('/newCategory/:category', (req, res) => {
+    let newCategory = req.params.category
+    let newCatID = (categories.length + 1)
+    categories.push({id: newCatID, name: newCategory})
+    return res.send(categories)
 })
