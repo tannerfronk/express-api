@@ -99,6 +99,11 @@ app.get('/getCategories', (req, res) => {
 app.post('/newCategory/:category', (req, res) => {
     let newCategory = req.params.category
     let newCatID = (categories.length + 1)
+    const isExisting = categories.some(category => category.name.toLowerCase() === newCategory.toLowerCase())
+    if(isExisting === true){
+        res.status(400)
+        return res.send('This category already exists')
+    }
     categories.push({id: newCatID, name: newCategory})
     return res.send(categories)
 })
