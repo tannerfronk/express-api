@@ -5,6 +5,7 @@ app.listen(8000, () => {
     console.log('server running on port 8000')
 })
 
+// default todos
 let todos = [
     {
         id: 1,
@@ -32,6 +33,7 @@ let todos = [
     },
 ]
 
+// default categories
 let categories = [
     {
         id: 1,
@@ -66,7 +68,7 @@ app.post('/createNewTodo/:todo', (req, res) => {
 })
 
 // update a todo
-app.post('/updateTodo/:updatedTodo', (req, res) => {
+app.put('/updateTodo/:updatedTodo', (req, res) => {
     const updatedTodo = JSON.parse(req.params.updatedTodo)
     todos = todos.map(todo => {
         if(todo.id === updatedTodo.id){
@@ -79,9 +81,9 @@ app.post('/updateTodo/:updatedTodo', (req, res) => {
 
 // delete a todo
 app.delete('/deleteTodo/:id', (req, res) => {
-    const id = parseInt(req.params.id)
+    const todoId = parseInt(req.params.id)
     todos = todos.filter((todo) => {
-        if(todo.id !== id){
+        if(todo.id !== todoId){
             return todo
         }
     })
@@ -98,5 +100,28 @@ app.post('/newCategory/:category', (req, res) => {
     let newCategory = req.params.category
     let newCatID = (categories.length + 1)
     categories.push({id: newCatID, name: newCategory})
+    return res.send(categories)
+})
+
+// update category
+app.put('/updateCategory/:category', (req, res) => {
+    let updatedCategory = JSON.parse(req.params.category)
+    categories = categories.map((category) => {
+        if(category.id === updatedCategory.id) {
+            return updatedCategory
+        }
+        return category
+    })
+    return res.send(categories)
+})
+
+// delete category
+app.delete('/deleteCategory/:id', (req, res) => {
+    let categoryID = parseInt(req.params.id)
+    categories = categories.filter((category) => {
+        if(category.id !== categoryID){
+            return category
+        }
+    })
     return res.send(categories)
 })
