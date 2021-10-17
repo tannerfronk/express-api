@@ -76,3 +76,14 @@ app.post('/updateTodo/:updatedTodo', (req, res) => {
     })
     return res.send(todos)
 })
+
+// delete a todo
+app.delete('/deleteTodo/:id', (req, res) => {
+    const id = parseInt(req.params.id)
+    todos = todos.filter((todo) => {
+        if(todo.id !== id){
+            return todo
+        }
+    })
+    return res.send(todos)
+})
