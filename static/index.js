@@ -1,14 +1,10 @@
 (function (window){
 
+  let todoIdToBeEdited = -1;
   const taskNameInput = document.querySelector('#newTaskName')
+  const addTaskBtn = document.querySelector('#addTaskButton')
   const selectedCategory = document.querySelector('#addSelectCategory')
-
-  // get initial todos
-  let todos = fetch('/getAllTodos')
-  .then(res => res.json())
-  .then(data => {
-    updateTodos(data)
-  })
+  const saveTaskBtn = document.querySelector('#saveTaskButton')
 
   // generate html for each todo
   const updateTodos = (list) => {
@@ -33,19 +29,27 @@
   
     taskList.addEventListener('click', eventClickHandler)
   }
+  
+  // get initial todos
+  let todos = fetch('/getAllTodos')
+  .then(res => res.json())
+  .then(data => {
+    updateTodos(data)
+  })
 
-  // get task info and send to server
+  // add todo
   const handleAddTask = () => {
     let newTodo = taskNameInput.value
     let newCategory = selectedCategory.value
+
     if(newCategory === 'Select Category'){
       newCategory = 'Uncategorized'
     }
+
     let todoObj = JSON.stringify({
       taskName: newTodo,
       category: newCategory
     })
-    console.log(todoObj)
 
     fetch('/createNewTodo/', {
       method: 'POST',
@@ -59,23 +63,59 @@
       updateTodos(data)
     })
   }
-
-  // add todo
-  let addTaskBtn = document.querySelector('#addTaskButton')
+  
   addTaskBtn.addEventListener('click', handleAddTask)
+  taskNameInput.addEventListener('keydown', (e) => {
+    if(e.code === 'Enter'){ // allows enter to process new task
+      handleAddTask()
+    }
+  })
+
+  const handleEditTask = () => {
+    let updatedName = taskNameInput.value
+    let updatedCategory = selectedCategory.value
+    let updatedTodoID = todoIdToBeEdited
+    
+    if(updatedCategory === 'Select Category'){
+      updatedCategory = 'Uncategorized'
+    }
+
+    let todoObj = JSON.stringify({
+      id: updatedTodoID,
+      taskName: updatedName,
+      category: updatedCategory
+    })
+    
+    fetch('/updateTodo/', {
+      method: 'PUT',
+      body: todoObj,
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+      document.querySelector('#newTaskName').value = '';
+      document.querySelector('#saveTaskButton').style.display = 'none';
+      document.querySelector('#addTaskButton').style.display = 'block';
+      updateTodos(data)
+    })
+  }
+  
+  saveTaskBtn.addEventListener('click', handleEditTask)
   
   
 
   
   // complete todo
-  function completeTodo(id) {
-    todos = todos.filter(element => {
-      if (element.id == id) {
-        element.completed = !element.completed;
-      }
-      return element;
-    })
-  }
+  // function completeTodo(id) {
+  //   todos = todos.filter(element => {
+  //     if (element.id == id) {
+  //       element.completed = !element.completed;
+  //     }
+  //     return element;
+  //   })
+  // }
 
   // delete todo
   function deleteTodo(id) {
@@ -97,11 +137,14 @@
     // console.log(event.target.attributes.todoId)
   
     if (event.target.attributes.buttonFunc.value == "complete") {
-      completeTodo(event.target.attributes.todoId.value)
+      todoIdToBeEdited = parseInt(event.target.attributes.todoId.value)
+      console.log(todoIdToBeEdited)
+      handleEditTask()
     } else if (event.target.attributes.buttonFunc.value == "close") {
       deleteTodo(event.target.attributes.todoId.value)
     } else if (event.target.attributes.buttonFunc.value == "edit") {
       editTodo(event.target.attributes)
+      todoIdToBeEdited = parseInt(event.target.attributes.todoId.value)
     }
   }
 
@@ -256,10 +299,10 @@ function deleteCompleted() {
 }
 
 
-let todoIdToBeEdited = -1;
+// let todoIdToBeEdited = -1;
 //edit 
 function editTodo(task) {
-  todoIdToBeEdited = parseInt(task.todoId.value);
+  // todoIdToBeEdited = parseInt(task.todoId.value);
   document.querySelector('#newTaskName').value = task.taskName.value;
   document.querySelector('#addSelectCategory').value = task.categoryName.value;
   document.querySelector('#saveTaskButton').style.display = 'block';
@@ -267,33 +310,33 @@ function editTodo(task) {
 }
 
 //save 
-const saveTodo = () => {
-  let newTaskName = document.querySelector('#newTaskName').value;
-  let selectedCategory = document.querySelector('#addSelectCategory');
+// const saveTodo = () => {
+//   let newTaskName = document.querySelector('#newTaskName').value;
+//   let selectedCategory = document.querySelector('#addSelectCategory');
 
-  if (selectedCategory.selectedIndex == 0) {
-    selectedCategory.value = "Uncategorized";
-  }
+//   if (selectedCategory.selectedIndex == 0) {
+//     selectedCategory.value = "Uncategorized";
+//   }
 
-  todos.forEach(element => {
-    if (element.id === todoIdToBeEdited) {
-      element.category = selectedCategory.value;
-      element.taskName = newTaskName;
-    }
+//   todos.forEach(element => {
+//     if (element.id === todoIdToBeEdited) {
+//       element.category = selectedCategory.value;
+//       element.taskName = newTaskName;
+//     }
 
-  });
+//   });
 
-  document.querySelector('#newTaskName').value = '';
-  document.querySelector('#saveTaskButton').style.display = 'none';
-  document.querySelector('#addTaskButton').style.display = 'block';
-  selectedCategory.selectedIndex = 0;
-  todoIdToBeEdited = -1;
-  updateTodos(todos);
-}
+//   document.querySelector('#newTaskName').value = '';
+//   document.querySelector('#saveTaskButton').style.display = 'none';
+//   document.querySelector('#addTaskButton').style.display = 'block';
+//   selectedCategory.selectedIndex = 0;
+//   todoIdToBeEdited = -1;
+//   updateTodos(todos);
+// }
 
-document.querySelector('#saveTaskButton').addEventListener('click', () => {
-  saveTodo();
-})
+// document.querySelector('#saveTaskButton').addEventListener('click', () => {
+//   saveTodo();
+// })
 
 // grab unique categories and display them in drop down
 function getAllCategories() {

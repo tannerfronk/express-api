@@ -67,7 +67,7 @@ app.get('/getAllTodos', (req, res) => {
 
 // create new todo
 app.post('/createNewTodo/', (req, res) => {
-    let newID = (todos.length + 1)
+    let newID = todos.length + 1
     const newTodo = {
         id: newID,
         taskName: req.body.taskName,
@@ -79,14 +79,29 @@ app.post('/createNewTodo/', (req, res) => {
 })
 
 // update a todo
-app.put('/updateTodo/:updatedTodo', (req, res) => {
-    const updatedTodo = JSON.parse(req.params.updatedTodo)
-    todos = todos.map(todo => {
-        if(todo.id === updatedTodo.id){
-            return updatedTodo
-        }
-        return todo
-    })
+app.put('/updateTodo/', (req, res) => {
+    
+    const taskID = req.body.id
+    const updatedName = req.body.taskName
+    const updatedCategory = req.body.category
+
+    if(updatedName !== '' && updatedCategory !== ''){
+        todos = todos.map(todo => {
+            if(todo.id === taskID){
+                todo.taskName = updatedName
+                todo.category = updatedCategory
+            }
+            return todo
+        })
+    } else {
+        todos = todos.map(todo => {
+            if(todo.id === taskID){
+                todo.completed = !todo.completed
+            }
+            return todo
+        })
+    }
+
     return res.send(todos)
 })
 
@@ -109,7 +124,7 @@ app.get('/getCategories', (req, res) => {
 // add category
 app.post('/newCategory/:category', (req, res) => {
     let newCategory = req.params.category
-    let newCatID = (categories.length + 1)
+    let newCatID = categories.length + 1
     const isExisting = categories.some(category => category.name.toLowerCase() === newCategory.toLowerCase())
     if(isExisting === true){
         res.status(400)
