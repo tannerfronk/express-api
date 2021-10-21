@@ -5,6 +5,7 @@
   const addTaskBtn = document.querySelector('#addTaskButton')
   const selectedCategory = document.querySelector('#addSelectCategory')
   const saveTaskBtn = document.querySelector('#saveTaskButton')
+  const errorDisplay = document.querySelector('#error')
 
   // generate html for each todo
   const updateTodos = (list) => {
@@ -51,17 +52,25 @@
       category: newCategory
     })
 
-    fetch('/createNewTodo/', {
-      method: 'POST',
-      body: todoObj,
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-        }
-    })
-    .then(res => res.json())
-    .then(data => {
-      updateTodos(data)
-    })
+    try {
+      fetch('/createNewTodo/', {
+        method: 'POST',
+        body: todoObj,
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+          }
+      })
+      .then(res => res.json())
+      .then(data => {
+        taskNameInput.value = ''
+        selectedCategory.selectedIndex = 0
+        updateTodos(data)
+      })
+    } catch(e){
+      console.log(e)
+      errorDisplay.innerHTML = 'There was an error creating a task, please try again later.'
+      errorDisplay.style.color = 'red'
+    }
   }
   
   addTaskBtn.addEventListener('click', handleAddTask)
@@ -85,63 +94,64 @@
       taskName: updatedName,
       category: updatedCategory
     })
-    
-    fetch('/updateTodo/', {
-      method: 'PUT',
-      body: todoObj,
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-        }
-    })
-    .then(res => res.json())
-    .then(data => {
-      document.querySelector('#newTaskName').value = '';
-      document.querySelector('#saveTaskButton').style.display = 'none';
-      document.querySelector('#addTaskButton').style.display = 'block';
-      updateTodos(data)
-    })
+    try {
+      fetch('/updateTodo/', {
+        method: 'PUT',
+        body: todoObj,
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+          }
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.querySelector('#newTaskName').value = '';
+        document.querySelector('#saveTaskButton').style.display = 'none';
+        document.querySelector('#addTaskButton').style.display = 'block';
+        updateTodos(data)
+      })
+    } catch(e){
+      console.log(e)
+      errorDisplay.innerHTML = 'There was an error updating the task, please try again later.'
+      errorDisplay.style.color = 'red'
+    }
   }
   
   saveTaskBtn.addEventListener('click', handleEditTask)
   
-  
+  const handleDeleteTask = (id) => {
+    let taskID = id
 
-  
-  // complete todo
-  // function completeTodo(id) {
-  //   todos = todos.filter(element => {
-  //     if (element.id == id) {
-  //       element.completed = !element.completed;
-  //     }
-  //     return element;
-  //   })
-  // }
-
-  // delete todo
-  function deleteTodo(id) {
-    todos = todos.filter(element => {
-      if (element.id != id) {
-        return element;
-      }
-  
+    let todoObj = JSON.stringify({
+      id: taskID
     })
-  
-    updateTodos(todos)
+
+    try{
+      fetch('/deleteTodo/', {
+        method: 'DELETE',
+        body: todoObj,
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+          }
+      })
+      .then(res => res.json())
+      .then(data => {
+        updateTodos(data)
+      })
+    } catch(e){
+      console.log(e)
+      errorDisplay.innerHTML = 'There was an error deleting the task, please try again later.'
+      errorDisplay.style.color = 'red'
+    }
   }
+
 
   // event handlers
   function eventClickHandler(event) {
-    // console.log(event)
-    // console.log(event.target.id)
-    // console.log(event.target.attributes.buttonFunc.value)
-    // console.log(event.target.attributes.todoId)
-  
     if (event.target.attributes.buttonFunc.value == "complete") {
       todoIdToBeEdited = parseInt(event.target.attributes.todoId.value)
-      console.log(todoIdToBeEdited)
       handleEditTask()
     } else if (event.target.attributes.buttonFunc.value == "close") {
-      deleteTodo(event.target.attributes.todoId.value)
+      handleDeleteTask(event.target.attributes.todoId.value)
     } else if (event.target.attributes.buttonFunc.value == "edit") {
       editTodo(event.target.attributes)
       todoIdToBeEdited = parseInt(event.target.attributes.todoId.value)

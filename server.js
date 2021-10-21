@@ -106,8 +106,8 @@ app.put('/updateTodo/', (req, res) => {
 })
 
 // delete a todo
-app.delete('/deleteTodo/:id', (req, res) => {
-    const todoId = parseInt(req.params.id)
+app.delete('/deleteTodo/', (req, res) => {
+    const todoId = parseInt(req.body.id)
     todos = todos.filter((todo) => {
         if(todo.id !== todoId){
             return todo
