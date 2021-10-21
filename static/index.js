@@ -231,7 +231,6 @@ function editCategory(categoryName) {
 
 //edit 
 function editTodo(task) {
-  // todoIdToBeEdited = parseInt(task.todoId.value);
   document.querySelector('#newTaskName').value = task.taskName.value;
   document.querySelector('#addSelectCategory').value = task.categoryName.value;
   document.querySelector('#saveTaskButton').style.display = 'block';
