@@ -107,12 +107,20 @@ app.put('/updateTodo/', (req, res) => {
 
 // delete a todo
 app.delete('/deleteTodo/', (req, res) => {
-    const todoId = parseInt(req.body.id)
-    todos = todos.filter((todo) => {
-        if(todo.id !== todoId){
-            return todo
-        }
-    })
+    if(req.body.deleteAll === false){
+        const todoId = parseInt(req.body.id)
+        todos = todos.filter(todo => {
+            if(todo.id !== todoId){
+                return todo
+            }
+        })
+    } else {
+        todos = todos.filter(todo => {
+            if(!todo.completed){
+                return todo
+            }
+        })
+    }
     return res.send(todos)
 })
 
