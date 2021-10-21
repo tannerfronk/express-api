@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="./index.css" rel='stylesheet'>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+
+  <title>Todo App</title>
+</head>
+
+<body>
+  <h1 id="title">Todo App</h1>
+
+  <div id="root" class="container">
+    <div id="newTaskSection" class="input row new-row">
+      <div>
+        <input id="newTaskName" type="text" placeholder="New todo">
+        <select id="addSelectCategory" class="categoryPicker">
+          <option selected>Select Category</option>
+          <option>Work</option>
+          <option>School</option>
+          <option>Home</option>
+          <option>Uncategorized</option>
+        </select>
+        <button id="addTaskButton" type="button" class="btn btn-success">Add Todo</button>
+        <button id="saveTaskButton" type="button" class="btn btn-success" style="display: none;">Save Task</button>
+      </div>
+    </div>
+    <div id="newCategorySection" class="row new-row">
+      <div>
+        <input id="newCategoryName" type="text" placeholder="New Category">
+        <button id="addCategoryButton" type="button" class="btn btn-success">Create Category</button>
+      </div>
+    </div>
+    <div id="categoryFilterSection" class="row new-row">
+      <div>
+        <select id="filterCategory" class="categoryPicker">
+          <option selected>Filter By Category</option>
+        </select>
+        <button type="button" id="editCategoryButton" class="btn btn-success btn-sm">Edit</button>
+
+      </div>
+    </div>
+    <div id="taskList">
+      <!-- tasks go here -->
+    </div>
+    <div>
+      <div id="deleteCompletedSection">
+        <button type="button" class="btn btn-success" onclick="deleteCompleted()">Delete Completed Tasks</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+  <script src="index.js"></script>
+</body>
+
+</html>

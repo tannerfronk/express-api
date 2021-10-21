@@ -1,9 +1,16 @@
 const express = require('express')
+const bodyParser = require('body-parser');
 const app = express()
 
 app.listen(8000, () => {
     console.log('server running on port 8000')
 })
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.text());
+
+app.use(express.static('static'))
 
 // default todos
 let todos = [
@@ -11,25 +18,25 @@ let todos = [
         id: 1,
         taskName: "Organize Files",
         completed: false,
-        category: 1
+        category: 'Work'
     },
     {
         id: 2,
         taskName: "Complete History Homework",
         completed: true,
-        category: 2
+        category: 'School'
     },
     {
         id: 3,
         taskName: "Take out the trash",
         completed: false,
-        category: 4
+        category: 'Home'
     },
     {
         id: 4,
         taskName: "Restring Guitar",
         completed: false,
-        category: 3
+        category: 'Uncategorized'
     },
 ]
 
@@ -59,10 +66,14 @@ app.get('/getAllTodos', (req, res) => {
 })
 
 // create new todo
-app.post('/createNewTodo/:todo', (req, res) => {
-    const reqObj = JSON.parse(req.params.todo)
+app.post('/createNewTodo/', (req, res) => {
     let newID = (todos.length + 1)
-    const newTodo = {id: newID, ...reqObj}
+    const newTodo = {
+        id: newID,
+        taskName: req.body.taskName,
+        completed: false,
+        category: req.body.category
+    }
     todos.push(newTodo)
     return res.send(todos)
 })
