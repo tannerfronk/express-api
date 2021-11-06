@@ -50,24 +50,24 @@ app.use(express.static('static'))
 // ]
 
 // default categories
-let categories = [
-    {
-        id: 1,
-        name: 'Work'
-    },
-    {
-        id: 2,
-        name: 'School'
-    },
-    {
-        id: 3,
-        name: 'Uncategorized'
-    },
-    {
-        id: 4,
-        name: 'Home'
-    },
-]
+// let categories = [
+//     {
+//         id: 1,
+//         name: 'Work'
+//     },
+//     {
+//         id: 2,
+//         name: 'School'
+//     },
+//     {
+//         id: 3,
+//         name: 'Uncategorized'
+//     },
+//     {
+//         id: 4,
+//         name: 'Home'
+//     },
+// ]
 
 // get all todos
 app.get('/getAllTodos', async (req, res) => {
@@ -81,25 +81,26 @@ app.post('/createNewTodo/', async (req, res) => {
     
     let todos = await Todo.find()
     // create obj for new todo
-    // let newID = todos.length + 1
+    let newID = todos.length + 1
     const newTodo = new Todo({
-        // id: newID,
+        id: newID,
         taskName: req.body.taskName,
         completed: false,
         category: req.body.category
     })
 
     // save to mongo
-    newTodo.save().then(doc => {
+    newTodo.save()
+    .then(doc => {
         
         console.log(doc)
         console.log('added todo')
     })
-
-    // return all existing todos
-    todos = await Todo.find()
-    console.log(todos)
-    return res.send(todos)
+    .then(async () => {
+        todos = await Todo.find()
+        console.log(todos)
+        return res.send(todos)
+    })
 })
 
 // update a todo
