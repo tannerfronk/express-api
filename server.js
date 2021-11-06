@@ -1,9 +1,18 @@
 const express = require('express')
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose')
+const { mongoURI } = require('./config')
+const Todo = require('./models/Todo')
 const app = express()
 
-app.listen(8000, () => {
-    console.log('server running on port 8000')
+mongoose.connect(mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => {
+    app.listen(8000, () => {
+        console.log('server running on port 8000')
+    })
 })
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -13,32 +22,32 @@ app.use(bodyParser.text());
 app.use(express.static('static'))
 
 // default todos
-let todos = [
-    {
-        id: 1,
-        taskName: "Organize Files",
-        completed: false,
-        category: 'Work'
-    },
-    {
-        id: 2,
-        taskName: "Complete History Homework",
-        completed: true,
-        category: 'School'
-    },
-    {
-        id: 3,
-        taskName: "Take out the trash",
-        completed: false,
-        category: 'Home'
-    },
-    {
-        id: 4,
-        taskName: "Restring Guitar",
-        completed: false,
-        category: 'Uncategorized'
-    },
-]
+// let todos = [
+//     {
+//         id: 1,
+//         taskName: "Organize Files",
+//         completed: false,
+//         category: 'Work'
+//     },
+//     {
+//         id: 2,
+//         taskName: "Complete History Homework",
+//         completed: true,
+//         category: 'School'
+//     },
+//     {
+//         id: 3,
+//         taskName: "Take out the trash",
+//         completed: false,
+//         category: 'Home'
+//     },
+//     {
+//         id: 4,
+//         taskName: "Restring Guitar",
+//         completed: false,
+//         category: 'Uncategorized'
+//     },
+// ]
 
 // default categories
 let categories = [
@@ -61,20 +70,35 @@ let categories = [
 ]
 
 // get all todos
-app.get('/getAllTodos', (req, res) => {
+app.get('/getAllTodos', async (req, res) => {
+    const todos = await Todo.find()
+    console.log(todos)
     return res.send(todos)
 })
 
 // create new todo
-app.post('/createNewTodo/', (req, res) => {
-    let newID = todos.length + 1
-    const newTodo = {
-        id: newID,
+app.post('/createNewTodo/', async (req, res) => {
+    
+    let todos = await Todo.find()
+    // create obj for new todo
+    // let newID = todos.length + 1
+    const newTodo = new Todo({
+        // id: newID,
         taskName: req.body.taskName,
         completed: false,
         category: req.body.category
-    }
-    todos.push(newTodo)
+    })
+
+    // save to mongo
+    newTodo.save().then(doc => {
+        
+        console.log(doc)
+        console.log('added todo')
+    })
+
+    // return all existing todos
+    todos = await Todo.find()
+    console.log(todos)
     return res.send(todos)
 })
 
