@@ -135,22 +135,21 @@ app.put('/updateTodo/', async (req, res) => {
 })
 
 // delete a todo
-app.delete('/deleteTodo/', (req, res) => {
+app.delete('/deleteTodo/', async (req, res) => {
+    const todoId = parseInt(req.body.id)
     if(req.body.deleteAll === false){
-        const todoId = parseInt(req.body.id)
-        todos = todos.filter(todo => {
-            if(todo.id !== todoId){
-                return todo
-            }
+        let todo = await Todo.findOneAndDelete({ id: todoId })
+        .then(async () => {
+            let todos = await Todo.find()
+            return res.send(todos)
         })
     } else {
-        todos = todos.filter(todo => {
-            if(!todo.completed){
-                return todo
-            }
+        let todo = await Todo.deleteMany({ completed: true })
+        .then(async () => {
+            let todos = await Todo.find()
+            return res.send(todos)
         })
     }
-    return res.send(todos)
 })
 
 // get categories
