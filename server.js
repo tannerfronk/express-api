@@ -104,30 +104,34 @@ app.post('/createNewTodo/', async (req, res) => {
 })
 
 // update a todo
-app.put('/updateTodo/', (req, res) => {
+app.put('/updateTodo/', async (req, res) => {
     
     const taskID = req.body.id
     const updatedName = req.body.taskName
     const updatedCategory = req.body.category
 
-    if(updatedName !== '' && updatedCategory !== ''){
-        todos = todos.map(todo => {
-            if(todo.id === taskID){
-                todo.taskName = updatedName
-                todo.category = updatedCategory
-            }
-            return todo
-        })
-    } else {
-        todos = todos.map(todo => {
-            if(todo.id === taskID){
-                todo.completed = !todo.completed
-            }
-            return todo
-        })
+    let todo = await Todo.findOne({ id: taskID })
+
+    if (!todo){
+        throw new Error('todo not found')
     }
 
-    return res.send(todos)
+    if(updatedName !== '' && updatedCategory !== ''){
+        todo.taskName = updatedName
+        todo.category = updatedCategory
+        const result = await todo.save()
+        .then(async () => {
+            let todos = await Todo.find()
+            return res.send(todos)
+        })
+    } else {
+        todo.completed = !todo.completed
+        const result = await todo.save()
+        .then(async () => {
+            let todos = await Todo.find()
+            return res.send(todos)
+        })
+    }
 })
 
 // delete a todo
