@@ -152,6 +152,8 @@ app.delete('/deleteTodo/', async (req, res) => {
     }
 })
 
+// everything below has not been hooked up to the mongoDB yet
+
 // get categories
 app.get('/getCategories', (req, res) => {
     return res.send(categories)
